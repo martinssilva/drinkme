@@ -1,84 +1,113 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Image, Button } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Swiper from 'react-native-deck-swiper';
 
-import {fetchApi} from "../services";
-
-const MainDrink = () => {
-  const [drink, setDrink] = useState(null);
+export default function App() {
+  const [drinks, setDrinks] = useState([]);
+  const [cardIndex, setCardIndex] = useState(0);
 
   useEffect(() => {
-    fetchApi().then((data) => {
-      setDrink(data);
-    });
+    fetchDrinks(2); // Fetch two drinks initially for smoother swiping
   }, []);
 
-  const saveDrink = async () => {
-    try {
-      const existingDrinks = await AsyncStorage.getItem("selectedDrinks");
-      const updatedDrinks = existingDrinks
-        ? [...JSON.parse(existingDrinks), drink]
-        : [drink];
-      await AsyncStorage.setItem(
-        "selectedDrinks",
-        JSON.stringify(updatedDrinks)
+  const fetchDrinks = async (count) => {
+    const newDrinks = [];
+    for (let i = 0; i < count; i++) {
+      const response = await fetch(
+        'https://www.thecocktaildb.com/api/json/v1/1/random.php',
       );
-      alert("Drink saved successfully!");
-    } catch (error) {
-      console.log(error);
-      alert("Failed to save drink.");
+      const data = await response.json();
+      newDrinks.push(data.drinks[0]);
     }
+    setDrinks((prevDrinks) => [...prevDrinks, ...newDrinks]);
+  };
+
+  const onSwipedRight = async (index) => {
+    const swipedDrink = drinks[index];
+    await AsyncStorage.setItem(
+      `@liked_drink_${swipedDrink.idDrink}`,
+      JSON.stringify(swipedDrink),
+    );
+  };
+
+  const onSwipedLeft = (index) => {
+    // If there are only 2 cards left in the deck, fetch more drinks
+    if (drinks.length - index === 2) {
+      fetchDrinks(5);
+    }
+    setCardIndex(index + 1); // Update the cardIndex state
+  };
+
+  const renderCard = (card) => {
+    return (
+      <View style={styles.card}>
+        <Image source={{ uri: card.strDrinkThumb }} style={styles.image} />
+        <Text style={styles.text}>{card.strDrink}</Text>
+        <Text
+          style={styles.ingredients}
+        >{`Main Ingredients: ${card.strIngredient1}, ${card.strIngredient2}, ${card.strIngredient3}`}</Text>
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      {drink ? (
-        <>
-          <Image source={{ uri: drink.strDrinkThumb }} style={styles.image} />
-          <Text style={styles.text}>{drink.strDrink}</Text>
-          <Text
-            style={styles.ingredients}
-          >{`Main Ingredients: ${drink.strIngredient1}, ${drink.strIngredient2}, ${drink.strIngredient3}`}</Text>
-        </>
+      {drinks.length ? (
+        <Swiper
+          cards={drinks}
+          renderCard={renderCard}
+          onSwipedLeft={onSwipedLeft}
+          onSwipedRight={onSwipedRight}
+          cardIndex={cardIndex}
+          backgroundColor="transparent"
+          stackSize={2}
+          disableBottomSwipe
+          disableTopSwipe
+        />
       ) : (
         <Text style={styles.text}>Loading...</Text>
       )}
-      <Button
-        onPress={() => {
-          fetchApi().then((data) => {
-            setDrink(data);
-          });
-        }}
-        title="Drink"
-      />
-      <Button onPress={saveDrink} title="Save" />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  card: {
+    width: '90%',
+    borderRadius: 10,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginLeft: 15,
   },
   image: {
-    width: 200,
-    height: 200,
-    borderRadius: 50,
-    marginBottom: 16,
+    width: '100%',
+    height: 400,
+    borderRadius: 10,
   },
   text: {
     fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    marginTop: 15,
+    textAlign: 'center',
   },
-  ingredients: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-});
 
-export default MainDrink;
+});

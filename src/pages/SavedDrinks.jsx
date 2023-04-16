@@ -6,17 +6,21 @@ const SavedDrinks = () => {
   const [savedDrinks, setSavedDrinks] = useState([]);
 
   useEffect(() => {
-    const getData = async () => {
+    const fetchLikedDrinks = async () => {
       try {
-        const jsonValue = await AsyncStorage.getItem("selectedDrinks");
-        if (jsonValue !== null) {
-          setSavedDrinks(JSON.parse(jsonValue));
+        const keys = await AsyncStorage.getAllKeys();
+        const likedDrinkKeys = keys.filter((key) => key.startsWith('@liked_drink_'));
+    
+        if (likedDrinkKeys.length > 0) {
+          const likedDrinkData = await AsyncStorage.multiGet(likedDrinkKeys);
+          const likedDrinkObjects = likedDrinkData.map(([_, value]) => JSON.parse(value));
+          setSavedDrinks(likedDrinkObjects);
         }
-      } catch (e) {
-        console.log(e);
+      } catch (error) {
+        console.error("Error fetching liked drinks:", error);
       }
     };
-    getData();
+    fetchLikedDrinks();
   }, []);
 
   const renderItem = ({ item }) => (
@@ -28,7 +32,8 @@ const SavedDrinks = () => {
           Main Ingredients: {item.strIngredient1}, {item.strIngredient2},{" "}
           {item.strIngredient3}
         </Text>
-        <Button title="Learn More" />
+        <Button style={styles.learnMore} title="Learn More" />
+        <Button style={styles.delete} color="red" title="Delete Drink" />
       </View>
     </View>
   );
@@ -51,17 +56,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#000",
     paddingVertical: 20,
+    paddingHorizontal:20,
     height:60,
   },
   itemContainer: {
     flex:1,
-    flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
-    padding: 32,
+    padding: 22,
   },
   itemImage: {
     width: 120,
@@ -71,16 +76,23 @@ const styles = StyleSheet.create({
   },
   itemTextContainer: {
     flex: 1,
-    backgroundColor: "#000",
   },
   itemTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 8,
+    margin: 8,
+    alignItems: "center",
+    justifyContent: "center",
   },
   itemIngredients: {
     fontSize: 16,
     marginBottom: 8,
+  },
+  learnMore: {
+    margin:8,
+  },
+  delete: {
+    margin:8,
   },
 });
 
