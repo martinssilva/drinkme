@@ -2,35 +2,20 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, Button, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import { useSavedDrinks } from '../context/SavedDrinksContext';
+
+
 
 const SavedDrinks = () => {
-  const [savedDrinks, setSavedDrinks] = useState([]);
+  const { savedDrinks, setSavedDrinks } = useSavedDrinks();
   const navigation = useNavigation();
-
-  useEffect(() => {
-    const fetchLikedDrinks = async () => {
-      try {
-        const keys = await AsyncStorage.getAllKeys();
-        const likedDrinkKeys = keys.filter((key) => key.startsWith('@liked_drink_'));
-    
-        if (likedDrinkKeys.length > 0) {
-          const likedDrinkData = await AsyncStorage.multiGet(likedDrinkKeys);
-          const likedDrinkObjects = likedDrinkData.map(([_, value]) => JSON.parse(value));
-          setSavedDrinks(likedDrinkObjects);
-        }
-      } catch (error) {
-        console.error("Error fetching liked drinks:", error);
-      }
-    };
-    fetchLikedDrinks();
-  }, []);
 
   const handleDeleteDrink = async (item) => {
     try {
       // Remove the drink object from the savedDrinks state
       const newSavedDrinks = savedDrinks.filter((drink) => drink.idDrink !== item.idDrink);
       setSavedDrinks(newSavedDrinks);
-      
+  
       // Remove the corresponding key-value pair from AsyncStorage
       await AsyncStorage.removeItem(`@liked_drink_${item.idDrink}`);
     } catch (error) {

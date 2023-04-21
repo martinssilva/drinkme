@@ -7,16 +7,22 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Swiper from 'react-native-deck-swiper';
+import { useSavedDrinks } from '../context/SavedDrinksContext';
+
 
 export default function App() {
   const [drinks, setDrinks] = useState([]);
   const [cardIndex, setCardIndex] = useState(0);
+  const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
-    fetchDrinks(2); // Fetch two drinks initially for smoother swiping
+    fetchDrinks(6); // Fetch fell drinks initially for smoother swiping
   }, []);
 
   const fetchDrinks = async (count) => {
+    if (fetching) return;
+
+    setFetching(true);
     const newDrinks = [];
     for (let i = 0; i < count; i++) {
       const response = await fetch(
@@ -26,14 +32,23 @@ export default function App() {
       newDrinks.push(data.drinks[0]);
     }
     setDrinks((prevDrinks) => [...prevDrinks, ...newDrinks]);
+    setFetching(false);
   };
+  const { savedDrinks, setSavedDrinks } = useSavedDrinks();
 
   const onSwipedRight = async (index) => {
+    if (drinks.length - index === 2) {
+      fetchDrinks(5);
+    }
+    setCardIndex(index + 1); // Update the cardIndex state
     const swipedDrink = drinks[index];
     await AsyncStorage.setItem(
       `@liked_drink_${swipedDrink.idDrink}`,
       JSON.stringify(swipedDrink),
     );
+  
+    // Update the savedDrinks state
+    setSavedDrinks((prevDrinks) => [...prevDrinks, swipedDrink]);
   };
 
   const onSwipedLeft = (index) => {
@@ -66,7 +81,7 @@ export default function App() {
           onSwipedRight={onSwipedRight}
           cardIndex={cardIndex}
           backgroundColor="transparent"
-          stackSize={2}
+          stackSize={3}
           disableBottomSwipe
           disableTopSwipe
         />
