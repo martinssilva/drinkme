@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image, Button, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
 const SavedDrinks = () => {
   const [savedDrinks, setSavedDrinks] = useState([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchLikedDrinks = async () => {
@@ -23,6 +25,23 @@ const SavedDrinks = () => {
     fetchLikedDrinks();
   }, []);
 
+  const handleDeleteDrink = async (item) => {
+    try {
+      // Remove the drink object from the savedDrinks state
+      const newSavedDrinks = savedDrinks.filter((drink) => drink.idDrink !== item.idDrink);
+      setSavedDrinks(newSavedDrinks);
+      
+      // Remove the corresponding key-value pair from AsyncStorage
+      await AsyncStorage.removeItem(`@liked_drink_${item.idDrink}`);
+    } catch (error) {
+      console.error("Error deleting drink:", error);
+    }
+  };
+
+  const handleLearnMore = (drink) => {
+    navigation.navigate('Details', { drink });
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
       <Image source={{ uri: item.strDrinkThumb }} style={styles.itemImage} />
@@ -32,8 +51,10 @@ const SavedDrinks = () => {
           Main Ingredients: {item.strIngredient1}, {item.strIngredient2},{" "}
           {item.strIngredient3}
         </Text>
-        <Button style={styles.learnMore} title="Learn More" />
-        <Button style={styles.delete} color="red" title="Delete Drink" />
+        <Button style={styles.learnMore} title="Learn More" onPress={() => handleLearnMore(item)} />
+        <Button style={styles.delete} color="red" title="Delete Drink" 
+          onPress={() => handleDeleteDrink(item)} 
+        />
       </View>
     </View>
   );
