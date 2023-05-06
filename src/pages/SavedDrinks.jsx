@@ -36,10 +36,12 @@ const SavedDrinks = () => {
           Main Ingredients: {item.strIngredient1}, {item.strIngredient2},{" "}
           {item.strIngredient3}
         </Text>
-        <Button style={styles.learnMore} title="Learn More" onPress={() => handleLearnMore(item)} />
-        <Button style={styles.delete} color="red" title="Delete Drink" 
-          onPress={() => handleDeleteDrink(item)} 
-        />
+        <View style={styles.learnMore}>
+          <Button title="Learn More" onPress={() => handleLearnMore(item)} />
+        </View>
+        <View style={styles.delete}>
+          <Button color="red" title="Delete Drink" onPress={() => handleDeleteDrink(item)} />
+        </View>
       </View>
     </View>
   );
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#00aaff",
     paddingVertical: 20,
     paddingHorizontal:20,
     height:60,
@@ -95,10 +97,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   learnMore: {
-    margin:8,
+    borderRadius: 25,
+    overflow: 'hidden',
+    margin: 4,
   },
   delete: {
-    margin:8,
+    borderRadius: 25,
+    overflow: 'hidden',
+    margin: 4,
   },
 });
 

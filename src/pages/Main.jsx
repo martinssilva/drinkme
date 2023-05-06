@@ -8,6 +8,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Swiper from 'react-native-deck-swiper';
 import { useSavedDrinks } from '../context/SavedDrinksContext';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 
 export default function App() {
@@ -73,6 +75,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <View style={{ ...styles.colorOverlay, backgroundColor: 'rgba(255, 0, 0, 0.6)' }} />
+      <View style={{ ...styles.colorOverlay, backgroundColor: 'rgba(0, 128, 0, 0.5)', left: '50%' }} />
       {drinks.length ? (
         <Swiper
           cards={drinks}
@@ -90,6 +94,7 @@ export default function App() {
       )}
     </View>
   );
+  
 }
 
 const styles = StyleSheet.create({
@@ -123,6 +128,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 15,
     textAlign: 'center',
+  },
+  colorOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: '50%',
   },
 
 });
