@@ -32,7 +32,7 @@ const DrinkDetails = ({ route }) => {
         <Text style={styles.ingredients}>
           {drink.strIngredient1}, {drink.strIngredient2}, {drink.strIngredient3}
         </Text>
-        <Text style={styles.subtitle}>Instructions:</Text>
+        <Text style={styles.subtitle}>Pouring Instructions:</Text>
         <Text style={styles.instructions}>{drink.strInstructions}</Text>
       </View>
     </LinearGradient>

@@ -15,6 +15,7 @@ const MyTabs = () => {
     <SavedDrinksProvider>
       <Tab.Navigator
         screenOptions={({ route }) => ({
+          
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
@@ -26,17 +27,22 @@ const MyTabs = () => {
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+          headerStyle: {
+            backgroundColor: '#fff', 
+          },
+          headerTintColor: '#f4511e',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
         })}
-        tabBarOptions={{
-          activeTintColor: 'tomato',
-          inactiveTintColor: 'gray',
-        }}
       >
         <Tab.Screen
           name="Home"
           component={MainDrink}
           options={{
-            headerTitle: 'Home',
+            headerTitle: 'Swipe & Sip',
             headerTitleAlign: 'center',
           }}
         />
@@ -44,7 +50,7 @@ const MyTabs = () => {
           name="Saved Drinks"
           component={SavedDrinks}
           options={{
-            headerTitle: 'Saved Drinks',
+            headerTitle: 'My drinks',
             headerTitleAlign: 'center',
           }}
         />
@@ -63,7 +69,21 @@ const DrinkNavigation = () => {
         component={MyTabs}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="Details" component={DrinkDetails} />
+      <Stack.Screen 
+        name="Details" 
+        component={DrinkDetails}
+        options={{
+          headerStyle: {
+            backgroundColor: '#fff', 
+          },
+          headerTintColor: '#f4511e',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerTitleAlign: 'center',
+          headerTitle: 'Mixology Guide',
+        }}
+       />
     </Stack.Navigator>
   );
 }

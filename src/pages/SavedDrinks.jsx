@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#00aaff",
+    backgroundColor: "white",
     paddingVertical: 20,
     paddingHorizontal:20,
     height:60,
@@ -75,6 +75,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 10,
     padding: 22,
+    // iOS shadow properties
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0, // These values are for horizontal and vertical offset of the shadow.
+      height: 2,
+    },
+    shadowOpacity: 0.23, // This value can be between 0 and 1.
+    shadowRadius: 2.62, // The larger the radius, the blurrier the shadow will be.
+
+    // Android shadow properties
+    elevation: 4, // This value can be from 0 to any higher number for different shadow depths.
   },
   itemImage: {
     width: 120,

@@ -75,8 +75,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={{ ...styles.colorOverlay, backgroundColor: 'rgba(255, 0, 0, 0.6)' }} />
-      <View style={{ ...styles.colorOverlay, backgroundColor: 'rgba(0, 128, 0, 0.5)', left: '50%' }} />
       {drinks.length ? (
         <Swiper
           cards={drinks}
